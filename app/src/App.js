@@ -4,6 +4,9 @@ import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, Provider, web3 } from '@project-serum/anchor';
 import { Metadata } from '@metaplex-foundation/mpl-token-metadata';
 import { render } from '@testing-library/react';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+
 
 
 
@@ -14,7 +17,7 @@ const App = () => {
 
 
   const checkIfWalletIsConnected = async () => {
-    console.log("asdasdasdasd")
+    console.log("start checking wallet connection")
     try {
       const { solana } = window;
 
@@ -42,7 +45,6 @@ const App = () => {
 
   const connectWallet = async () => {
     const { solana } = window;
-  
     if (solana) {
       const response = await solana.connect();
       console.log('Connected with Public Key:', response.publicKey.toString());
@@ -53,34 +55,33 @@ const App = () => {
   const getMetadata = async () =>{
     const connection = new Connection("https://api.devnet.solana.com");
     const nftsmetadata = await getAllNfts();
-    var ImageAndSounds=[];
+    var musicInfo=[];
     for(let nftIndex in nftsmetadata){
-    let selecetNft= nftsmetadata[nftIndex];
-    const nftMint=selecetNft.mint;
-    const metadataPDA = await Metadata.getPDA(new PublicKey(nftMint));
-    const tokenMetadata = await Metadata.load(connection, metadataPDA);
-    const uri = tokenMetadata.data.data.uri;
-    const json = await fetchUri(uri);
-    const image=json["image"];
-    try{
+      let selecetNft= nftsmetadata[nftIndex];
+      const nftMint=selecetNft.mint;
+      const metadataPDA = await Metadata.getPDA(new PublicKey(nftMint));
+      const tokenMetadata = await Metadata.load(connection, metadataPDA);
+      const uri = tokenMetadata.data.data.uri;
+      const json = await fetchUri(uri);
+      const image=json["image"];
+      const name=json["name"];
+      try{
 
-      const sound = json["properties"]["files"][1]["uri"];
-      if(sound != null){
-        let tempArr=[image,sound];
-        ImageAndSounds.push(tempArr);
+        const sound = json["properties"]["files"][1]["uri"];
+        if(sound != null){
+          let tempArr=[image,sound,name];
+          musicInfo.push(tempArr);
+        }
+      }
+      catch{
+        continue;
       }
     }
-    catch{
-      continue;
-    }
-    
-    }
-    setNftMetadata(ImageAndSounds);
+    setNftMetadata(musicInfo);
   }
   const fetchUri = async (uri) =>{
     return fetch(uri).then(res => res.json())
   }
-  
 
  const getAllNfts = async () =>{
   const connection = new Connection("https://api.devnet.solana.com");
@@ -92,34 +93,46 @@ const App = () => {
  useEffect(() => {
   const onLoad = async () => {
     await checkIfWalletIsConnected();
-   
+
   };
   window.addEventListener('load', onLoad);
   return () => window.removeEventListener('load', onLoad);
 }, []);
 
+
 function renderText(){
   if(walletAddress != null){
-  return( 
-    
-    <div>
-    <h1 >by Neden Sinir#9150</h1>
-  <h4>connected with: {walletAddress}</h4>
-  <h5>wait after clicking get metadata fetching nfts may take time</h5>
-  <h1 >album photo/music play</h1>
-  </div>
-  )
+    return(
+      <div>
+
+        <h4>connected with: {walletAddress}</h4>
+        {/* <h5>wait after clicking get metadata fetching nfts may take time</h5> */}
+        <h1 >NFT Music list</h1>
+    </div>
+    )
+  }
 }
-}
+
 function renderSoundRows() {
   const products =getNftMetadata;
 
   const list = []
 
   products.forEach((product) => {
-    list.push(<li>
-      <img src = {product[0]}></img>
-      <audio controls src = {product[1]} ></audio>
+    list.push(
+    <li>
+      <Card style={{ width: '20rem' }}>
+          <Card.Img variant="top" src={product[0]}/>
+          <Card.Body>
+            <Card.Title>{product[2]}</Card.Title>
+            <Card.Text>
+              <audio controls src = {product[1]} ></audio>
+            </Card.Text>
+            {/* <a href="#" class="btn btn-primary">Go somewhere Button</a> */}
+          </Card.Body>
+        </Card>
+      {/* <img src = {product[0]}></img>
+      <audio controls src = {product[1]} ></audio> */}
     </li>)
   })
 
@@ -130,25 +143,30 @@ function renderSoundRows() {
   )
 }
 
-  
+
     return (
-      <div className="connected-container">
-        <button
-  className="cta-button connect-wallet-button"
-  onClick={connectWallet}
-  >
-  Connect to Wallet
-  </button>
-  <button className="cta-button submit-gif-button" onClick={getMetadata}>
-          refresh metadata
-        </button> 
-        <div className="">
-        {renderText()}
-        {renderSoundRows()}
-      </div>
+      <div className="connected-container" >
+        <div className='button-group'>
+          <button
+            className="cta-button connect-wallet-button"
+            onClick={connectWallet}>
+            Connect to Wallet
+          </button>
+          <button className="cta-button submit-gif-button" onClick={getMetadata}>
+            Playlist
+          </button>
+        </div>
+
+        <div className="text-content">
+        <h1>StarSeed NFT Music Player</h1>
+          {renderText()}
+          {renderSoundRows()}
+        </div>
       </div>
     )
-  
+
+
+
 };
 
 export default App;

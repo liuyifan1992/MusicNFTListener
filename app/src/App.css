@@ -1,8 +1,9 @@
-.App {
+#root {
   height: 100vh;
-  background-color: #1a202c;
+  background-color: #abc1ed;
+  /* background-image: url("./assets/startseed_background.png"); */
   overflow: scroll;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .container {
@@ -50,6 +51,8 @@
   font-size: 16px;
   font-weight: bold;
   color: white;
+  float: right;
+  margin: 10px;
 }
 
 .connect-wallet-button {
@@ -125,6 +128,16 @@
   margin: 50px auto;
 }
 
-.connected-container button {
+.button-group{
+  overflow: auto;
+}
+
+
+.-contconnectedainer button {
   height: 50px;
+}
+
+.text-content {
+  margin: auto;
+  width: 50%;
 }
