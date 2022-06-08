@@ -9,7 +9,7 @@ const App = () => {
  const getTokens =async () =>{
   const connection = new Connection("https://api.devnet.solana.com");
 
-  const ownerPublickey = '3TN32piXcHxiNp2pTYjrhhZ8NRznZqZkvGWX4SQCN9aW';
+  const ownerPublickey = '3XiKV9gbcw2B665vgeBRytrDXcqs4heSFm5BK1x7UKi1';
   try{
 
     let response = await connection.getParsedTokenAccountsByOwner(new PublicKey(ownerPublickey), {
